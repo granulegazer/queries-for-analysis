@@ -42,7 +42,7 @@ SELECT
     END AS partition_summary
 FROM dba_indexes i
 WHERE UPPER(i.table_name) = UPPER('YOUR_TABLE_NAME')
--- AND UPPER(i.owner) = UPPER('YOUR_SCHEMA_NAME')  -- Uncomment if needed
+AND UPPER(i.owner) = USER
 ORDER BY 
     i.owner,
     CASE WHEN i.partitioned = 'NO' AND i.status != 'VALID' THEN 1 ELSE 2 END,  -- Problems first
