@@ -1,12 +1,23 @@
-# Oracle Index Analysis Queries for Oracle 19c
+# Oracle Database Analysis Queries for Oracle 19c
 
-This repository contains comprehensive Oracle SQL queries designed to analyze indexes and partitioned indexes, specifically optimized for Oracle 19c.
+This repository contains comprehensive Oracle SQL queries designed to analyze various database objects, specifically optimized for Oracle 19c. All queries work without DBA privileges using USER_ and ALL_ views.
+
+## Directory Structure
+
+### Oracle/Index-Analysis/
+Contains index analysis queries for performance monitoring and troubleshooting.
+
+### Oracle/Table-Tablespace-Analysis/ 
+Contains table size and tablespace usage analysis queries.
 
 ## Files Included
 
-### 1. `oracle_comprehensive_index_analysis.sql`
+### Index Analysis
+
+#### 1. `oracle_comprehensive_index_analysis.sql`
 **Purpose**: Exhaustive index analysis with detailed information
 **Use Case**: Deep analysis, performance tuning, maintenance planning
+**Requirements**: DBA privileges (uses DBA_ views)
 
 **Features:**
 - Complete index metadata and status
@@ -16,9 +27,10 @@ This repository contains comprehensive Oracle SQL queries designed to analyze in
 - Detailed recommendations
 - Statistics freshness analysis
 
-### 2. `oracle_quick_index_check.sql`
+#### 2. `oracle_quick_index_check.sql`
 **Purpose**: Quick index status verification
 **Use Case**: Daily checks, rapid troubleshooting
+**Requirements**: DBA privileges (uses DBA_ views)
 
 **Features:**
 - Essential index status information
@@ -140,11 +152,54 @@ This query leverages Oracle 19c enhancements:
 2. Use hybrid columnar compression where applicable
 3. Consider automatic indexing features (if licensed)
 
+### Table and Tablespace Analysis
+
+#### 3. `table_size_analysis.sql`
+**Purpose**: Find table sizes for specific tables without DBA privileges  
+**Use Case**: Storage analysis, capacity planning, table monitoring
+
+**Features:**
+- Table size analysis for 3 specific tables
+- Multiple size units (bytes, KB, MB, GB)
+- Works with USER_ and ALL_ views only
+- Includes row count and statistics correlation
+- No DBA privileges required
+
+#### 4. `tablespace_size_analysis.sql`
+**Purpose**: Tablespace usage and free space analysis  
+**Use Case**: Space monitoring, capacity planning, storage optimization
+
+**Features:**
+- Tablespace usage summary and details
+- Free space calculation
+- Usage by object type breakdown
+- Largest space consumers identification
+- Works without DBA access
+
+### Table Size Query Usage
+
+1. **For your own tables**: Use the `user_segments` version
+2. **For specific tables**: Replace 'TABLE1', 'TABLE2', 'TABLE3' with actual table names
+3. **For other schemas**: Use `all_segments` version and specify schema.table
+
+```sql
+-- Example for 3 specific tables
+WHERE table_name IN ('EMPLOYEES', 'DEPARTMENTS', 'LOCATIONS')
+```
+
+### Tablespace Analysis Usage
+
+1. **Quick overview**: Use Query 1 for basic tablespace summary
+2. **Detailed analysis**: Use Query 2 for accurate free space information
+3. **Object breakdown**: Use Query 3 to see what's using space
+4. **Top consumers**: Use Query 5 to identify largest objects
+
 ## Security Notes
 
-- These queries use DBA_* views requiring DBA privileges
-- For limited access, modify to use USER_* or ALL_* views
-- Consider creating views with appropriate access controls
+- **Index Analysis queries**: Use DBA_* views requiring DBA privileges
+- **Table/Tablespace queries**: Use USER_* and ALL_* views (no DBA access required)
+- For limited access environments, use the Table-Tablespace-Analysis queries
+- Consider creating views with appropriate access controls for index analysis
 
 ## Sample Output Interpretation
 
