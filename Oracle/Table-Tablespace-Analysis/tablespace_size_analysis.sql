@@ -13,12 +13,12 @@
 SELECT 
     tablespace_name,
     -- Total allocated space
-    ROUND(SUM(bytes)/1024/1024, 2) AS total_allocated_mb,
     ROUND(SUM(bytes)/1024/1024/1024, 2) AS total_allocated_gb,
+    ROUND(SUM(bytes)/1024/1024, 2) AS total_allocated_mb,
     -- Used space (from segments)
-    ROUND(SUM(CASE WHEN segment_type IS NOT NULL THEN bytes ELSE 0 END)/1024/1024, 2) AS used_mb,
+    ROUND(SUM(CASE WHEN segment_type IS NOT NULL THEN bytes ELSE 0 END)/1024/1024/1024, 2) AS used_gb,
     -- Free space calculation
-    ROUND((SUM(bytes) - SUM(CASE WHEN segment_type IS NOT NULL THEN bytes ELSE 0 END))/1024/1024, 2) AS estimated_free_mb,
+    ROUND((SUM(bytes) - SUM(CASE WHEN segment_type IS NOT NULL THEN bytes ELSE 0 END))/1024/1024/1024, 2) AS estimated_free_gb,
     -- Usage percentage
     ROUND(
         (SUM(CASE WHEN segment_type IS NOT NULL THEN bytes ELSE 0 END) / SUM(bytes)) * 100, 2
@@ -53,11 +53,11 @@ tablespace_free AS (
 SELECT 
     COALESCE(tu.tablespace_name, tf.tablespace_name) AS tablespace_name,
     -- Used space
-    ROUND(NVL(tu.used_bytes, 0)/1024/1024, 2) AS used_mb,
+    ROUND(NVL(tu.used_bytes, 0)/1024/1024/1024, 2) AS used_gb,
     -- Free space
-    ROUND(NVL(tf.free_bytes, 0)/1024/1024, 2) AS free_mb,
+    ROUND(NVL(tf.free_bytes, 0)/1024/1024/1024, 2) AS free_gb,
     -- Total space
-    ROUND((NVL(tu.used_bytes, 0) + NVL(tf.free_bytes, 0))/1024/1024, 2) AS total_mb,
+    ROUND((NVL(tu.used_bytes, 0) + NVL(tf.free_bytes, 0))/1024/1024/1024, 2) AS total_gb,
     -- Usage percentage
     ROUND(
         CASE 
@@ -89,9 +89,9 @@ SELECT
     -- Count of objects
     COUNT(*) AS object_count,
     -- Total space used by object type
-    ROUND(SUM(bytes)/1024/1024, 2) AS total_mb,
+    ROUND(SUM(bytes)/1024/1024/1024, 2) AS total_gb,
     -- Average object size
-    ROUND(AVG(bytes)/1024/1024, 2) AS avg_object_size_mb,
+    ROUND(AVG(bytes)/1024/1024/1024, 2) AS avg_object_size_gb,
     -- Percentage of tablespace used by this object type
     ROUND(
         (SUM(bytes) / SUM(SUM(bytes)) OVER (PARTITION BY tablespace_name)) * 100, 2
@@ -107,8 +107,8 @@ ORDER BY tablespace_name, SUM(bytes) DESC;
 
 SELECT 
     COUNT(DISTINCT tablespace_name) AS tablespace_count,
-    ROUND(SUM(bytes)/1024/1024, 2) AS total_used_mb,
     ROUND(SUM(bytes)/1024/1024/1024, 2) AS total_used_gb,
+    ROUND(SUM(bytes)/1024/1024, 2) AS total_used_mb,
     COUNT(*) AS total_segments
 FROM user_segments;
 
@@ -123,7 +123,7 @@ FROM (
         tablespace_name,
         segment_type,
         segment_name,
-        ROUND(bytes/1024/1024, 2) AS size_mb,
+        ROUND(bytes/1024/1024/1024, 2) AS size_gb,
         blocks,
         extents,
         ROW_NUMBER() OVER (PARTITION BY tablespace_name ORDER BY bytes DESC) AS rn
